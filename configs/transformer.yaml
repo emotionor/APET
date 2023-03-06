@@ -1,0 +1,63 @@
+model:
+  type: "transformer"
+  params:
+    sub_model:
+      transformer:
+        token_num: 128
+        d_model: 768
+        nhead: 6
+        dos_num: 128
+        num_encoder_layers: 6
+        num_decoder_layers: 6
+        dim_feedforward: 3072
+        dropout: 0.1
+
+    save_best: "MSE"
+    metrics_list: ["MAE", "MSE"]
+
+    optimizer:
+      transformer:
+        type: "AdamW"
+        params:
+          lr: 0.0001
+          #betas: [0.9, 0.99]
+      
+    
+    lr_scheduler:
+      transformer:
+        sched: cosine
+        epochs: &maxepoch 20
+        min_lr: 1.0e-07
+        warmup_lr: 0.0001
+        warmup_epochs: 0
+        lr_noise: 
+        cooldown_epochs: 0
+
+
+
+dataset:
+  train:
+    data_dir: "./data"
+
+  test:
+    data_dir: "./data"
+
+  valid:
+    data_dir: "./data"
+  smear: 0
+
+
+
+dataloader:
+  num_workers: 1
+  pin_memory: True
+  prefetch_factor: 10
+  persistent_workers: True
+
+trainer:
+  batch_size: 128
+  test_batch_size: 32
+  valid_batch_size: 32
+  max_epoch: *maxepoch
+
+
