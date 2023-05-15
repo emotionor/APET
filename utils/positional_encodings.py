@@ -44,9 +44,9 @@ class PositionalEncoding3D(nn.Module):
         pos_z = pos[:,:,2]*2*np.pi
         #print(pos_x.size())
         #lenp = len(pos_x)
-        pos_x = torch.rand(pos_x.size()).to(tensor.device)
-        pos_y = torch.rand(pos_y.size()).to(tensor.device)
-        pos_z = torch.rand(pos_z.size()).to(tensor.device)
+        #pos_x = torch.rand(pos_x.size()).to(tensor.device)
+        #pos_y = torch.rand(pos_y.size()).to(tensor.device)
+        #pos_z = torch.rand(pos_z.size()).to(tensor.device)
 
 
         sin_inp_x_1 = torch.einsum("ij,k->ijk", pos_x, self.inv_freq).sin()
