@@ -14,6 +14,7 @@ import torch
 import torch.nn.functional as F
 from torch import nn, Tensor
 from utils.positional_encodings import PositionalEncoding3D
+from utils.atom_feature import AtomFeatureEncoder
 
 class MLP(nn.Module):
     """ Very simple multi-layer perceptron (also called FFN)"""
@@ -59,6 +60,8 @@ class Transformer(nn.Module):
 
         self.d_model = d_model
         self.nhead = nhead
+        
+        self.atom_fea_encoder = AtomFeatureEncoder(4, d_model)
 
     def _reset_parameters(self):
         for p in self.parameters():
@@ -69,13 +72,13 @@ class Transformer(nn.Module):
         # flatten NxCxHxW to HWxNxC
         B, L = src.shape
         # src = src.permute(1, 0, 2)
-
+        atom_fea = self.atom_fea_encoder(src)
         src_data = self.tok_emb(src)
 
         query_embed = self.query_embed.unsqueeze(0).repeat(B, 1, 1)
 
         tgt = self.tgt.unsqueeze(0).repeat(B, 1, 1)
-        memory = self.encoder(src_data, src_key_padding_mask=mask, pos=pos_embed)
+        memory = self.encoder(src_data+atom_fea, src_key_padding_mask=mask, pos=pos_embed)
         hs, attention_v = self.decoder(tgt, memory, memory_key_padding_mask=mask,
                           pos=pos_embed, query_pos=query_embed)
 

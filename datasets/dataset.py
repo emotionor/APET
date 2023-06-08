@@ -13,8 +13,8 @@ class Dos_Dataset(Dataset):
         self.split = split
         self.smear = smear
         self.data_dir = data_dir+"/"+split+"/"
-        self.src_len   = 98  # elements length 
-        self.tgt_len   = 40  # target dos length
+        #self.src_len   = 108  # elements length 
+        #self.tgt_len   = 128  # target dos length
         
         self.elements  = self.get_elements()  #size (__len__, src_len)
         self.positions = self.get_positions() #size (__len__, src_len*3)
@@ -38,7 +38,7 @@ class Dos_Dataset(Dataset):
 
     def get_elements(self):
         if self.smear==0:
-            filename  = self.data_dir+"elements_%s_new.npy"%self.split
+            filename  = self.data_dir+"elements_mat_%s.npy"%self.split
         else:
             filename  = self.data_dir+"elements_g%s_%s.npy"%(self.smear, self.split)
         elements  = np.load(filename)
@@ -46,7 +46,7 @@ class Dos_Dataset(Dataset):
 
     def get_positions(self):
         if self.smear==0:
-            filename  = self.data_dir+"positions_%s_new.npy"%self.split
+            filename  = self.data_dir+"positions_mat_%s.npy"%self.split
         else:
             filename  = self.data_dir+"positions_g%s_%s.npy"%(self.smear, self.split)
         positions  = np.load(filename)
@@ -54,7 +54,7 @@ class Dos_Dataset(Dataset):
 
     def get_tgtdos(self):
         if self.smear==0:
-            filename  = self.data_dir+"tgtdos_%s.npy"%self.split
+            filename  = self.data_dir+"tgtdos_mat_%s.npy"%self.split
         else:
             filename  = self.data_dir+"tgtdos_g%s_%s.npy"%(self.smear, self.split)
         tgtdos  = np.load(filename)

@@ -90,8 +90,9 @@ class basemodel(nn.Module):
     def loss(self, predict, target):
 
         #norm = torch.norm(target, p=2)
-        #return torch.mean(abs(predict-target))
-        return torch.mean((predict-target)**2)
+
+        return torch.mean(abs(predict-target))
+        #return torch.mean((predict-target)**2)
         #return nn.functional.kl_div(predict.softmax(dim=-1).log(), target.softmax(dim=-1), reduction='sum')
         #return nn.HuberLoss(reduction="mean", delta=0.2)(predict, target)
 

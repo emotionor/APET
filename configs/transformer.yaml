@@ -20,13 +20,13 @@ model:
         type: "AdamW"
         params:
           lr: 0.0001
-          #betas: [0.9, 0.99]
+          betas: [0.9, 0.99]
       
     
     lr_scheduler:
       transformer:
         sched: cosine
-        epochs: &maxepoch 20
+        epochs: &maxepoch 40
         min_lr: 1.0e-07
         warmup_lr: 0.0001
         warmup_epochs: 0
@@ -37,13 +37,13 @@ model:
 
 dataset:
   train:
-    data_dir: "./data"
+    data_dir: "./data/Mat"
 
   test:
-    data_dir: "./data"
+    data_dir: "./data/Mat"
 
   valid:
-    data_dir: "./data"
+    data_dir: "./data/Mat"
   smear: 0
 
 

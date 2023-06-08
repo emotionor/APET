@@ -75,7 +75,7 @@ def subprocess_fn(args):
 
     model_without_ddp.stat()
     
-    model_without_ddp.trainer(train_dataloader, test_dataloader, valid_dataloader,  builder.get_max_epoch(), checkpoint_savedir=args.run_dir, resume=args.resume)
+    model_without_ddp.trainer(train_dataloader, valid_dataloader, test_dataloader,  builder.get_max_epoch(), checkpoint_savedir=args.run_dir, resume=args.resume)
     
     #model_without_ddp.test(test_data_loader=valid_dataloader, epoch=0)
     
@@ -131,7 +131,7 @@ if __name__ == "__main__":
     parser.add_argument('--per_cpus',       type = int,     default = 1,                                            help = 'Number of perCPUs to use')
     # parser.add_argument('--world_size',     type = int,     default = -1,                                           help = 'number of distributed processes')
     parser.add_argument('--init_method',    type = str,     default='tcp://127.0.0.1:23456',                        help = 'multi process init method')
-    parser.add_argument('--outdir',         type = str,     default='/workpath/yaning/transformer/output',  help = 'Where to save the results')
+    parser.add_argument('--outdir',         type = str,     default='./output',  help = 'Where to save the results')
     parser.add_argument('--cfg', '-c',      type = str,     default = os.path.join('configs', 'default.yaml'),      help = 'path to the configuration file')
     parser.add_argument('--desc',           type=str,       default='STR',                                          help = 'String to include in result dir name')
     parser.add_argument('--smear',          type = float,   default = None,                                         help = 'Gaussian smearing')
