@@ -49,7 +49,7 @@ def subprocess_fn(args):
     dataset_params = args.cfg_params['dataset']
 
     #test_dataloader = builder.get_dataloader(dataset_params=dataset_params, split = 'test', batch_size=args.batch_size)
-    valid_dataloader = builder.get_dataloader(dataset_params=dataset_params, split = 'test', choice=[],batch_size=args.batch_size)
+    valid_dataloader = builder.get_dataloader(dataset_params=dataset_params, split = 'valid', choice=[],batch_size=args.batch_size)
     
     logger.info('valid dataloaders build complete')
     logger.info('begin valid ...')
@@ -108,17 +108,17 @@ def main(args):
     
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--seed',           type = int,     default = 0,                                            help = 'seed')
+    parser.add_argument('--seed',           type = int,     default = 42,                                            help = 'seed')
     parser.add_argument('--cuda',           type = int,     default = 0,                                            help = 'cuda id')
     parser.add_argument('--world_size',     type = int,     default = 1,                                            help = 'Number of progress')
     parser.add_argument('--per_cpus',       type = int,     default = 1,                                            help = 'Number of perCPUs to use')
-    parser.add_argument('--batch_size',     type = int,     default = 1,                                           help = "batch size")
-    parser.add_argument('--predict_len',    type = int,     default = 99,                                           help = "predict len")
-    parser.add_argument('--length',         type = int,     default = 99,                                           help = "predict len")
+    parser.add_argument('--batch_size',     type = int,     default = 128,                                           help = "batch size")
+    parser.add_argument('--predict_len',    type = int,     default = 108,                                           help = "predict len")
+    parser.add_argument('--length',         type = int,     default = 108,                                           help = "predict len")
     parser.add_argument('--metric_list',    nargs = '+',                                                            help = 'metric list')
     # parser.add_argument('--world_size',     type = int,     default = -1,                                           help = 'number of distributed processes')
     parser.add_argument('--init_method',    type = str,     default = 'tcp://127.0.0.1:23456',                      help = 'multi process init method')
-    parser.add_argument('--cfgdir',         type = str,     default = '/mnt/vepfs/users/cuiyaning/materials/apet/APET/output/transformer/world_size1-v3-mae-mat-betas',  help = 'Where to save the results')
+    parser.add_argument('--cfgdir',         type = str,     default = '/mnt/vepfs/users/cuiyaning/materials/apet/APET/output/transformer/world_size1-v2-newposition2-4wdataset-mae1-mse0.02',  help = 'Where to save the results')
 #world_size1-tg0_lr1e-4_mae_e_w
 
     args = parser.parse_args()

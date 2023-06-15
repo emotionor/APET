@@ -38,7 +38,7 @@ class Dos_Dataset(Dataset):
 
     def get_elements(self):
         if self.smear==0:
-            filename  = self.data_dir+"elements_mat_%s.npy"%self.split
+            filename  = self.data_dir+"elements_apet_%s.npy"%self.split
         else:
             filename  = self.data_dir+"elements_g%s_%s.npy"%(self.smear, self.split)
         elements  = np.load(filename)
@@ -46,7 +46,7 @@ class Dos_Dataset(Dataset):
 
     def get_positions(self):
         if self.smear==0:
-            filename  = self.data_dir+"positions_mat_%s.npy"%self.split
+            filename  = self.data_dir+"positions_apet_%s.npy"%self.split
         else:
             filename  = self.data_dir+"positions_g%s_%s.npy"%(self.smear, self.split)
         positions  = np.load(filename)
@@ -54,7 +54,7 @@ class Dos_Dataset(Dataset):
 
     def get_tgtdos(self):
         if self.smear==0:
-            filename  = self.data_dir+"tgtdos_mat_%s.npy"%self.split
+            filename  = self.data_dir+"tgtdos_apet_%s.npy"%self.split
         else:
             filename  = self.data_dir+"tgtdos_g%s_%s.npy"%(self.smear, self.split)
         tgtdos  = np.load(filename)

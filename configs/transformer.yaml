@@ -26,7 +26,7 @@ model:
     lr_scheduler:
       transformer:
         sched: cosine
-        epochs: &maxepoch 40
+        epochs: &maxepoch 100
         min_lr: 1.0e-07
         warmup_lr: 0.0001
         warmup_epochs: 0
@@ -37,13 +37,13 @@ model:
 
 dataset:
   train:
-    data_dir: "./data/Mat"
+    data_dir: "./data/train4w"
 
   test:
-    data_dir: "./data/Mat"
+    data_dir: "./data/train4w"
 
   valid:
-    data_dir: "./data/Mat"
+    data_dir: "./data/train4w"
   smear: 0
 
 

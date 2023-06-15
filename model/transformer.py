@@ -62,6 +62,7 @@ class Transformer(nn.Module):
         self.nhead = nhead
         
         self.atom_fea_encoder = AtomFeatureEncoder(4, d_model)
+        
 
     def _reset_parameters(self):
         for p in self.parameters():
@@ -76,9 +77,9 @@ class Transformer(nn.Module):
         src_data = self.tok_emb(src)
 
         query_embed = self.query_embed.unsqueeze(0).repeat(B, 1, 1)
-
+        
         tgt = self.tgt.unsqueeze(0).repeat(B, 1, 1)
-        memory = self.encoder(src_data+atom_fea, src_key_padding_mask=mask, pos=pos_embed)
+        memory = self.encoder(src_data, atom_fea, src_key_padding_mask=mask, pos=pos_embed)
         hs, attention_v = self.decoder(tgt, memory, memory_key_padding_mask=mask,
                           pos=pos_embed, query_pos=query_embed)
 
@@ -96,11 +97,12 @@ class TransformerEncoder(nn.Module):
         self.norm = norm
 
     def forward(self, src,
+                atom_fea,
                 mask: Optional[Tensor] = None,
                 src_key_padding_mask: Optional[Tensor] = None,
                 pos: Optional[Tensor] = None):
         output = src
-
+        
         for layer in self.layers:
             output = layer(output, src_mask=mask,
                            src_key_padding_mask=src_key_padding_mask, pos=pos)

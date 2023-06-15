@@ -75,7 +75,7 @@ def subprocess_fn(args):
 
     model_without_ddp.stat()
     
-    model_without_ddp.trainer(train_dataloader, valid_dataloader, test_dataloader,  builder.get_max_epoch(), checkpoint_savedir=args.run_dir, resume=args.resume)
+    model_without_ddp.trainer(train_dataloader, test_dataloader, valid_dataloader,  builder.get_max_epoch(), checkpoint_savedir=args.run_dir, resume=args.resume)
     
     #model_without_ddp.test(test_data_loader=valid_dataloader, epoch=0)
     

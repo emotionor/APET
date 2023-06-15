@@ -3,29 +3,43 @@ import torch.nn as nn
 import numpy as np
 
 
-def get_emb(sin_inp):
+def get_emb(sin_inp_x, sin_inp_y, sin_inp_z):
     """
     Gets a base embedding for one dimension with sin and cos intertwined
     """
-    #emb = torch.stack((sin_inp.sin(), sin_inp.cos()), dim=-1)
-    return sin_inp #torch.flatten(emb, -2, -1)
+    emb = torch.stack((sin_inp_x.sin(), sin_inp_x.cos(), 
+                       sin_inp_y.sin(), sin_inp_y.cos(), 
+                       sin_inp_z.sin(), sin_inp_z.cos()), dim=-1)
+    #emb2 = emb.transpose(2, 3)
+    return torch.flatten(emb, -2, -1)
 
+def get_emb_2(sin_inp):
+    emb = torch.stack((sin_inp.sin(), sin_inp.cos()), dim=-1)
+    return torch.flatten(emb, -2, -1)
 
 class PositionalEncoding3D(nn.Module):
-    def __init__(self, channels):
+    def __init__(self, channels, sep=True):
         """
         :param channels: The last dimension of the tensor you want to apply pos emb to.
         """
         super(PositionalEncoding3D, self).__init__()
         self.org_channels = channels
-        channels = int(np.ceil(channels / 12) * 2)
-        if channels % 4:
-            channels += channels % 4
-        self.channels = channels
-        inv_freq = 1.0 / (10000 ** (torch.arange(0, channels, 1).float() / channels))
+
+        assert channels%12==0
+        self.sep=sep
+        if sep:
+            channels = int(np.ceil(channels / 12) * 2)
+            inv_freq = 1.0 / (10000 ** (torch.arange(0, channels, 1).float() / channels))
+        else:
+            channels = int(np.ceil(channels / 4) * 2)
+            inv_freq = 1.0 / (10000 ** (torch.arange(0, channels*3, 1).float() / channels*3))
+
+        #inv_freq = 1.0 / (10000 ** (torch.arange(0, channels*3, 1).float() / channels*3))
         #inv_freq = 1.0 / (2 ** (torch.arange(0, channels, 1).float() ))
         self.register_buffer("inv_freq", inv_freq)
+        self.channels = channels
         self.cached_penc = None
+        
 
     def forward(self, tensor, pos):
         """
@@ -47,37 +61,22 @@ class PositionalEncoding3D(nn.Module):
         #pos_x = torch.rand(pos_x.size()).to(tensor.device)
         #pos_y = torch.rand(pos_y.size()).to(tensor.device)
         #pos_z = torch.rand(pos_z.size()).to(tensor.device)
+        if self.sep:
+            sin_inp_x = torch.einsum("ij,k->ijk", pos_x, self.inv_freq)
+            sin_inp_y = torch.einsum("ij,k->ijk", pos_y, self.inv_freq)
+            sin_inp_z = torch.einsum("ij,k->ijk", pos_z, self.inv_freq)
+            emb_tot = get_emb(sin_inp_x, sin_inp_y, sin_inp_z).type(tensor.type())
+        else:   
+            sin_inp_x = torch.einsum("ij,k->ijk", pos_x, self.inv_freq[:self.channels])
+            sin_inp_y = torch.einsum("ij,k->ijk", pos_y, self.inv_freq[self.channels:self.channels*2])
+            sin_inp_z = torch.einsum("ij,k->ijk", pos_z, self.inv_freq[self.channels*2:])
+            emb_x = get_emb_2(sin_inp_x)
+            emb_y = get_emb_2(sin_inp_y)
+            emb_z = get_emb_2(sin_inp_z)
+            emb_tot = (emb_x + emb_y + emb_z).type(tensor.type())
+        
 
-
-        sin_inp_x_1 = torch.einsum("ij,k->ijk", pos_x, self.inv_freq).sin()
-        sin_inp_x_2 = torch.einsum("ij,k->ijk", pos_x, self.inv_freq).cos()
-        sin_inp_y_1 = torch.einsum("ij,k->ijk", pos_y, self.inv_freq).sin()
-        sin_inp_y_2 = torch.einsum("ij,k->ijk", pos_y, self.inv_freq).cos()
-        sin_inp_z_1 = torch.einsum("ij,k->ijk", pos_z, self.inv_freq).sin()
-        sin_inp_z_2 = torch.einsum("ij,k->ijk", pos_z, self.inv_freq).cos()
-
-
-        emb_x_1 = get_emb(sin_inp_x_1)
-        emb_y_1 = get_emb(sin_inp_y_1)
-        emb_z_1 = get_emb(sin_inp_z_1)
-
-        emb_x_2 = get_emb(sin_inp_x_2)
-        emb_y_2 = get_emb(sin_inp_y_2)
-        emb_z_2 = get_emb(sin_inp_z_2)
-
-        emb = torch.zeros((batch_size, N, self.channels * 6), device=tensor.device).type(
-            tensor.type()
-        )
-        emb[:, :, : self.channels] = emb_x_1
-        emb[:, :, self.channels : 2 * self.channels] = emb_x_2
-        emb[:, :, 2 * self.channels : 3 * self.channels] = emb_y_1
-        emb[:, :, 3 * self.channels : 4 * self.channels] = emb_y_2
-        emb[:, :, 4 * self.channels : 5 * self.channels] = emb_z_1
-        emb[:, :, 5 * self.channels :] = emb_z_2
-
-
-
-        res = tensor + emb
+        res = tensor + emb_tot
         return res
 
 
