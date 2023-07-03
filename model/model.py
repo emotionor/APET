@@ -30,7 +30,6 @@ class basemodel(nn.Module):
         # self.whether_final_test = self.params.get("final_test", False)
         # self.predict_length = self.params.get("predict_length", 20)
 
-
         # load model
         # print(params)
         sub_model = params.get('sub_model', {})
@@ -79,26 +78,28 @@ class basemodel(nn.Module):
                         state[k] = v.to(device)
 
     def data_preprocess(self, data):
-        inp, pos, target = data
+        inp, pos, target, dos_mean, dos_std = data
         mask = (inp==0)
         inp = inp.to(self.device, non_blocking=True)
         target = target.to(self.device, non_blocking=True)
         pos = pos.to(self.device, non_blocking=True)
+        dos_mean = dos_mean.to(self.device, non_blocking=True)
+        dos_std = dos_std.to(self.device, non_blocking=True)
         mask = torch.tensor(mask.clone().detach(), dtype=torch.bool).to(self.device)
-        return inp, pos, mask, target
+        return inp, pos, mask, target, dos_mean, dos_std
 
     def loss(self, predict, target):
 
         #norm = torch.norm(target, p=2)
 
-        return torch.mean(abs(predict-target)) #+torch.mean((predict-target)**2)*0.02
+        return torch.mean(abs(predict-target)) #+ torch.mean((predict-target)**2)*0.02
     
         #return torch.mean((predict-target)**2)
         #return nn.functional.kl_div(predict.softmax(dim=-1).log(), target.softmax(dim=-1), reduction='sum')
-        #return nn.HuberLoss(reduction="mean", delta=0.2)(predict, target)
+        #return self.lossfunc(predict, target)
 
     def train_one_step(self, batch_data, step):
-        inp, pos, mask, target = self.data_preprocess(batch_data)
+        inp, pos, mask, target,_,_ = self.data_preprocess(batch_data)
         if len(self.model) == 1:
             predict = self.model[list(self.model.keys())[0]](inp, mask, pos)[0].squeeze(-1)
         else:
@@ -117,31 +118,22 @@ class basemodel(nn.Module):
     def multi_step_predict(self, batch_data, clim_time_mean_daily, data_std, index, batch_len):
         pass
 
-    def read_gap(self, arr):
-        arr = arr.cpu().numpy()
-        zeros = np.where(arr ==0 )
+    def read_gap(self, array):
+        bin=0
+        if array[62]==0:
+            #bin=1
+            pass
         i = 63
-        j = 64
-        k = 0
-        for i in range(3):
-            if np.isin(i, zeros)==0:
-                i-=1
-        while np.isin(i, zeros):
-            i-=1
-            k+=1
-        for i in range(3):
-            if np.isin(j, zeros)==0:
-                j+=1
-        while np.isin(j, zeros):
-            j+=1
-            k+=1
-        if k == 1:
-            #print("1")
-            return 0
-        return round(k*0.06299212, 2)
+        try:
+            while array[i]==0:
+                bin+=1
+                i+=1
+        except KeyError as err:
+            return 4
+        return bin*0.063
 
-    def test_one_step(self, batch_data, step=None, save_predict=False):
-        inp, pos, mask, target = self.data_preprocess(batch_data)
+    def test_one_step(self, batch_data, step=None, dos_normalize=False, save_predict=False):
+        inp, pos, mask, target, dos_mean, dos_std = self.data_preprocess(batch_data)
         if len(self.model) == 1:
             predict, attention = self.model[list(self.model.keys())[0]](inp, mask, pos)
         predict = predict.squeeze(-1)
@@ -153,6 +145,13 @@ class basemodel(nn.Module):
         data_dict['pred'] = predict
         metrics_loss = self.eval_metrics.evaluate_batch(data_dict)
         metrics_loss.update({'lp_loss': loss.item()})
+        if dos_normalize == True:
+            predict_n = predict*dos_std+dos_mean
+            target_n = target*dos_std+dos_mean
+            predict_n[predict_n < 0] = 0
+            MAE_ori = torch.mean(torch.abs((predict_n)-target_n))
+            MSE_ori = torch.mean(((predict_n)-target_n)**2)
+            metrics_loss.update({'MAE_ori':MAE_ori,'MSE_ori':MSE_ori,'lp_loss': loss.item()})
         if save_predict:
 
             np.savetxt("dosdata/%s.txt"%step, [predict.squeeze(dim=0).cpu().numpy().T, target.squeeze(dim=0).cpu().numpy().T], fmt="%.4f")

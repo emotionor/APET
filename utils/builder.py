@@ -84,7 +84,7 @@ class ConfigBuilder(object):
     
 
     
-    def get_dataset(self, dataset_params = None, split = 'train', smear = 0, choice=[]):
+    def get_dataset(self, dataset_params = None, split = 'train', dos_normalize = False, smear = 0, choice=[]):
         """
         Get the dataset from configuration.
 
@@ -109,7 +109,7 @@ class ConfigBuilder(object):
         if type(dataset_params) == dict:
             dataset_type = str.lower(dataset_params.get('type', 'dos_dataset'))
             if dataset_type == 'dos_dataset':
-                dataset = Dos_Dataset(split = split, smear = smear, choice=choice, **dataset_params)
+                dataset = Dos_Dataset(split = split, dos_normalize=dos_normalize, smear = smear, choice=choice, **dataset_params)
             else:
                 raise NotImplementedError('Invalid dataset type: {}.'.format(dataset_type))
             # logger.info('Load {} dataset as {}ing set with {} samples.'.format(dataset_type, split, len(dataset)))
@@ -130,7 +130,7 @@ class ConfigBuilder(object):
         return sampler
    
 
-    def get_dataloader(self, dataset_params = None, split = 'train', smear = 0, choice=[],batch_size = None, dataloader_params = None):
+    def get_dataloader(self, dataset_params = None, split = 'train', smear = 0, choice=[],batch_size = None, dataloader_params = None, dos_normalize=False):
         """
         Get the dataloader from configuration.
 
@@ -161,7 +161,7 @@ class ConfigBuilder(object):
                 batch_size = self.trainer_params.get('valid_batch_size', 1)
         if dataloader_params is None:
             dataloader_params = self.dataloader_params
-        dataset = self.get_dataset(dataset_params, split, choice=choice)
+        dataset = self.get_dataset(dataset_params, split, choice=choice, dos_normalize=dos_normalize)
         if dataset is None:
             return None
         sampler = self.get_sampler(dataset, split)

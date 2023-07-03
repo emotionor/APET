@@ -203,6 +203,11 @@ class Metrics(object):
         """
 
         return weighted_acc_torch(pred - clim_time_mean_daily, gt - clim_time_mean_daily)
+    
+    def APETM(self, pred, gt, data_mask, clim_time_mean_daily, data_std):
+        #sample_mse = torch.mean(torch.abs(pred - gt)) + 0.04 * torch.mean((pred - gt) ** 2)
+        sample_mse = torch.mean(torch.abs(pred - gt)) + 0.02 * torch.mean((pred - gt) ** 2)
+        return sample_mse.item()
 
 class MetricsRecorder(object):
     """

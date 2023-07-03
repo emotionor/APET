@@ -118,7 +118,7 @@ if __name__ == "__main__":
     parser.add_argument('--metric_list',    nargs = '+',                                                            help = 'metric list')
     # parser.add_argument('--world_size',     type = int,     default = -1,                                           help = 'number of distributed processes')
     parser.add_argument('--init_method',    type = str,     default = 'tcp://127.0.0.1:23456',                      help = 'multi process init method')
-    parser.add_argument('--cfgdir',         type = str,     default = '/mnt/vepfs/users/cuiyaning/materials/apet/APET/output/transformer/world_size1-v2-newposition2-4wdataset-mae1-mse0.02',  help = 'Where to save the results')
+    parser.add_argument('--cfgdir',         type = str,     default = '/mnt/vepfs/users/cuiyaning/materials/apet/APET/output/transformer/world_size1-v2-newposition2-4wdataset-test-valid-2023',  help = 'Where to save the results')
 #world_size1-tg0_lr1e-4_mae_e_w
 
     args = parser.parse_args()

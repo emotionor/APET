@@ -37,13 +37,13 @@ model:
 
 dataset:
   train:
-    data_dir: "./data/train4w"
+    data_dir: "./data/train4w2023"
 
   test:
-    data_dir: "./data/train4w"
+    data_dir: "./data/train4w2023"
 
   valid:
-    data_dir: "./data/train4w"
+    data_dir: "./data/train4w2023"
   smear: 0
 
 

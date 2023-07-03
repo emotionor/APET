@@ -5,7 +5,7 @@ import numpy as np
 
 def get_emb(sin_inp_x, sin_inp_y, sin_inp_z):
     """
-    Gets a base embedding for one dimension with sin and cos intertwined
+    Gets a base embedding for three dimension with sin and cos intertwined
     """
     emb = torch.stack((sin_inp_x.sin(), sin_inp_x.cos(), 
                        sin_inp_y.sin(), sin_inp_y.cos(), 

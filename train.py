@@ -22,12 +22,12 @@ def subprocess_fn(args):
     builder = ConfigBuilder(**args.cfg_params)
 
     logger.info('Building dataloaders ...')
-
-    train_dataloader = builder.get_dataloader(split = 'train', smear = args.smear)
+    #args.dos_normalize = False
+    train_dataloader = builder.get_dataloader(split = 'train', smear = args.smear, dos_normalize=args.dos_normalize)
     logger.info('Train dataloaders build complete')
-    test_dataloader = builder.get_dataloader(split = 'test', smear = args.smear)
+    test_dataloader = builder.get_dataloader(split = 'test', smear = args.smear, dos_normalize=args.dos_normalize)
     logger.info('Test dataloaders build complete')
-    valid_dataloader = builder.get_dataloader(split = 'valid', smear = args.smear)
+    valid_dataloader = builder.get_dataloader(split = 'valid', smear = args.smear, dos_normalize=args.dos_normalize)
     logger.info('valid dataloaders build complete')
     print(type(test_dataloader), type(valid_dataloader))
     steps_per_epoch = len(train_dataloader)
@@ -123,8 +123,15 @@ def main(args):
 
     
 if __name__ == "__main__":
+    def str2bool(v):
+        if v.lower() in ('true', 't', 'yes', 'y', '1'):
+            return True
+        elif v.lower() in ('false', 'f', 'no', 'n', '0'):
+            return False
+        else:
+            raise argparse.ArgumentTypeError('Boolean value expected.')
     parser = argparse.ArgumentParser()
-    parser.add_argument('--resume',         type = bool,    default = False,                                        help = 'resume')
+    parser.add_argument('--resume',         type = str2bool,    default = False,                                        help = 'resume')
     parser.add_argument('--seed',           type = int,     default = 0,                                            help = 'seed')
     parser.add_argument('--cuda',           type = int,     default = 0,                                            help = 'cuda id')
     parser.add_argument('--world_size',     type = int,     default = 1,                                            help = 'Number of progress')
@@ -135,7 +142,7 @@ if __name__ == "__main__":
     parser.add_argument('--cfg', '-c',      type = str,     default = os.path.join('configs', 'default.yaml'),      help = 'path to the configuration file')
     parser.add_argument('--desc',           type=str,       default='STR',                                          help = 'String to include in result dir name')
     parser.add_argument('--smear',          type = float,   default = None,                                         help = 'Gaussian smearing')
-
+    parser.add_argument('--dos_normalize',  type = str2bool,    default = False,                                        help = 'standarlize')
     args = parser.parse_args()
 
     main(args)

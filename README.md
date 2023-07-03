@@ -1,11 +1,10 @@
 # APET
-Atomic Positional Embedding-based Transformer
-Introduced by Cui Yaning. The paper is under review.
+Atomic Positional Embedding-based Transformer introduced by Cui Yaning, et al. The paper is under review. More details will be updated later.
 
-## V1 No change
-## V2 and after, train+valid instead of train+test
-newposition1: xsin xcos ysin ycos zsin zcos-> xsin1 xcos1 ysin1 ycos1 zsin1 zcos1 xsin2...
-newposition2: tensor+posx+posy+posz
-newposition3: based on 2,inv_freq.length*3 -> x+y+z,diff freq reps diff posk
-## V3 +atom feature in the initail input src
-## V4 +atom feature in every encoder layer
+## Dataset
+The DOS dataset are avaliable in Material Project (https://next-gen.materialsproject.org/).
+All the data this work uses have been converted to three csv file, which is visible in the ```./data```. 
+The data files contain the corresponding MP-ids in Material Project, which can be verified by all by themselves.
+
+## Run the model
+Run ```train_script.sh``` to start running the APET pretraining task.
