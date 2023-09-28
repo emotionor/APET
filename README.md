@@ -1,5 +1,5 @@
 # APET
-Atomic Positional Embedding-based Transformer introduced by Cui Yaning, et al. The paper is under review. More details will be updated later.
+[Atomic Positional Embedding-based Transformer introduced by Cui Yaning, et al.](https://pubs.acs.org/doi/abs/10.1021/acs.jpclett.3c02036)
 
 ## Dataset
 The DOS dataset are avaliable in Material Project (https://next-gen.materialsproject.org/).
